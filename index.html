@@ -97,8 +97,8 @@ html.dark .sidebar{background:#0a0d14;border-right:1px solid var(--border);}
 .btn-sm{padding:5px 10px;font-size:11px;}
 .btn-icon{background:transparent;border:1px solid var(--border);color:var(--ink);width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .13s;}
 .btn-icon:hover{background:var(--surface-2);}
-.content{padding:20px 24px;flex:1;}
-.sec{display:none;}.sec.active{display:block;animation:fadeIn .18s ease;}
+.content{padding:20px 24px;flex:1;overflow-x:hidden;}
+.sec{display:none;min-width:0;}.sec.active{display:block;animation:fadeIn .18s ease;max-width:100%;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
 /* ── KPI ── */
@@ -9902,7 +9902,7 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:49 AM · CHECKPOINTS', title:'Sarah reads the blocking milestones',
     text:'The Checkpoint column tells Sarah exactly which conversation to have with each supplier.',
     narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For ISS-1038, the checkpoint is PF — Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
-    duration:18000, pointer:'#worklist-tbl',
+    duration:18000, pointer:'#sec-worklist .panel',
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
   },
@@ -10530,6 +10530,19 @@ function _showSpotlightOn(target){
     }
   }
 
+  // Table element: constrain to scroll-wrapper visible bounds (prevents wide tables
+  // from producing a spotlight box wider than the viewport)
+  if(target.tagName === 'TABLE'){
+    const scrollWrap = target.closest('[style*="overflow"]') || target.closest('.panel') || target.closest('.sec');
+    if(scrollWrap){
+      const wRect = scrollWrap.getBoundingClientRect();
+      sRect.top    = wRect.top;
+      sRect.left   = wRect.left;
+      sRect.width  = wRect.width;
+      sRect.height = wRect.height;
+    }
+  }
+
   // Banner: elevate above overlay
   const isBanner = (target.id === 'critical-banner' || target.closest && target.closest('#critical-banner'));
   if(isBanner){
@@ -10539,10 +10552,17 @@ function _showSpotlightOn(target){
   } else {
     const veil = document.getElementById('demo-veil');
     if(veil){ veil.style.opacity='0'; setTimeout(()=>{ if(veil.style.opacity==='0') veil.style.display='none'; },400); }
-    sBox.style.top    = (sRect.top - pad) + 'px';
-    sBox.style.left   = (sRect.left - pad) + 'px';
-    sBox.style.width  = (sRect.width + pad*2) + 'px';
-    sBox.style.height = (sRect.height + pad*2) + 'px';
+    // Clamp to viewport so the spotlight box never bleeds outside the screen
+    const vpW2 = window.innerWidth;
+    const vpH2 = window.innerHeight;
+    const clLeft   = Math.max(0, sRect.left - pad);
+    const clTop    = Math.max(0, sRect.top  - pad);
+    const clRight  = Math.min(vpW2, sRect.left + sRect.width  + pad);
+    const clBottom = Math.min(vpH2, sRect.top  + sRect.height + pad);
+    sBox.style.left   = clLeft  + 'px';
+    sBox.style.top    = clTop   + 'px';
+    sBox.style.width  = Math.max(0, clRight  - clLeft) + 'px';
+    sBox.style.height = Math.max(0, clBottom - clTop)  + 'px';
     sBox.classList.add('active');
   }
 
