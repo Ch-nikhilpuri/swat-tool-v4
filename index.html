@@ -24,7 +24,7 @@
   --shadow-sm:0 1px 4px rgba(13,17,23,.07);
   --shadow:0 2px 12px rgba(13,17,23,.09);
   --shadow-lg:0 8px 36px rgba(13,17,23,.14);
-  --sidebar-w:242px;--radius:8px;--demo-presenter-w:360px;
+  --sidebar-w:242px;--radius:8px;--demo-presenter-w:240px;
   --font:'IBM Plex Sans',sans-serif;
   --mono:'IBM Plex Mono',monospace;
   --display:'Syne',sans-serif;
@@ -1274,7 +1274,7 @@ html.dark .chart-dark{background:#080c14;}
 #meeting-frame {
   display:none;
   position:fixed; top:0; right:0; bottom:0;
-  width:var(--demo-presenter-w,360px); z-index:8800;
+  width:var(--demo-presenter-w,240px); z-index:8800;
   background:linear-gradient(180deg,#0a0c10 0%,#0d1117 50%,#0a0c10 100%);
   border-left:1px solid rgba(255,255,255,.06);
   box-shadow:-4px 0 30px rgba(0,0,0,.4);
@@ -1459,14 +1459,14 @@ html.dark .chart-dark{background:#080c14;}
 
 /* Controls */
 .mtg-controls {
-  padding:8px 14px;
+  padding:8px 10px;
   border-top:1px solid rgba(255,255,255,.04);
-  display:flex; align-items:center; gap:6px;
+  display:flex; align-items:center; gap:4px; flex-wrap:wrap;
 }
 .mtg-ctrl-btn {
-  padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;
+  padding:4px 7px; border-radius:5px; font-size:9.5px; cursor:pointer;
   border:none; background:rgba(255,255,255,.06); color:rgba(255,255,255,.5);
-  font-family:inherit; transition:all .15s;
+  font-family:inherit; transition:all .15s; white-space:nowrap;
 }
 .mtg-ctrl-btn:hover { background:rgba(255,255,255,.1); color:rgba(255,255,255,.8); }
 .mtg-ctrl-btn.primary { background:#d97706; color:#000; font-weight:700; margin-left:auto; }
@@ -10445,7 +10445,7 @@ function _visibleRect(el){
   left   = Math.max(0, left);
   top    = Math.max(0, top);
   const _presW = document.body.classList.contains('demo-meeting-on')
-    ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 360)
+    ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 240)
     : 0;
   right  = Math.min(window.innerWidth - _presW, right);
   bottom = Math.min(window.innerHeight, bottom);
@@ -10642,7 +10642,7 @@ function _showSpotlightOn(target){
     if(veil){ veil.style.opacity='0'; setTimeout(()=>{ if(veil.style.opacity==='0') veil.style.display='none'; },400); }
     // Clamp to SWAT panel boundary (excludes presenter panel on the right)
     const _presW2 = document.body.classList.contains('demo-meeting-on')
-      ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 360)
+      ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 240)
       : 0;
     const vpW2 = window.innerWidth - _presW2;
     const vpH2 = window.innerHeight;
@@ -10765,17 +10765,8 @@ function startDemo(){
   const narrator = document.getElementById('demo-narrator');
   if(narrator) narrator.style.display = 'block';
 
-  // Collapse sidebar so SWAT content gets maximum horizontal space
-  const _sb = document.getElementById('sidebar');
-  if(_sb && !_sb.classList.contains('collapsed')){
-    _sb.classList.add('collapsed');
-    document.querySelector('.main')?.classList.add('expanded');
-    const _sbBtn = _sb.querySelector('.sb-collapse-btn');
-    if(_sbBtn) _sbBtn.textContent = '▶';
-    window._demoDidCollapseSidebar = true;
-  } else {
-    window._demoDidCollapseSidebar = false;
-  }
+  // Keep sidebar expanded during demo so feature navigation stays visible
+  window._demoDidCollapseSidebar = false;
 
   // ── Activate meeting frame ──────────────────────────────────────────
   document.body.classList.add('demo-meeting-on');
