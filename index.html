@@ -24,7 +24,7 @@
   --shadow-sm:0 1px 4px rgba(13,17,23,.07);
   --shadow:0 2px 12px rgba(13,17,23,.09);
   --shadow-lg:0 8px 36px rgba(13,17,23,.14);
-  --sidebar-w:242px;--radius:8px;
+  --sidebar-w:242px;--radius:8px;--demo-presenter-w:360px;
   --font:'IBM Plex Sans',sans-serif;
   --mono:'IBM Plex Mono',monospace;
   --display:'Syne',sans-serif;
@@ -1274,7 +1274,7 @@ html.dark .chart-dark{background:#080c14;}
 #meeting-frame {
   display:none;
   position:fixed; top:0; right:0; bottom:0;
-  width:280px; z-index:8800;
+  width:var(--demo-presenter-w,360px); z-index:8800;
   background:linear-gradient(180deg,#0a0c10 0%,#0d1117 50%,#0a0c10 100%);
   border-left:1px solid rgba(255,255,255,.06);
   box-shadow:-4px 0 30px rgba(0,0,0,.4);
@@ -1472,14 +1472,71 @@ html.dark .chart-dark{background:#080c14;}
 .mtg-ctrl-btn.primary { background:#d97706; color:#000; font-weight:700; margin-left:auto; }
 .mtg-ctrl-btn.primary:hover { background:#f59e0b; }
 
-/* Adjust main content when meeting frame is active */
-body.demo-meeting-on .main {
-  margin-right:280px;
-  transition:margin-right .5s cubic-bezier(.4,0,.2,1);
+/* ═══════════════════════════════════════════════════════════════════
+   DEMO: STANDARDISED 2-PANEL FRAMED PRESENTATION LAYOUT
+   Left (SWAT app)  ~72% | Right (Presenter panel) ~28%
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Prevent page-level scroll — demo is a fixed viewport frame */
+body.demo-meeting-on {
+  overflow: hidden;
 }
-body.demo-meeting-on #demo-narrator { display:none !important; }
-/* Keep avatar hidden when meeting frame is on — presenter is in the panel */
-body.demo-meeting-on #demo-avatar { display:none !important; }
+
+/* SWAT panel: fixed-height flex column with right gutter for presenter */
+body.demo-meeting-on .main {
+  margin-right: var(--demo-presenter-w);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: margin-right .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* Topbar: in-flow header at top of SWAT panel, always readable */
+body.demo-meeting-on .topbar {
+  flex-shrink: 0;
+  position: relative;
+  top: auto;
+  opacity: 1 !important;
+}
+
+/* Critical banner: in-flow below topbar, no sticky needed */
+body.demo-meeting-on #critical-banner {
+  flex-shrink: 0;
+  position: relative;
+  top: auto;
+}
+
+/* Content: the ONLY scrollable region in the left panel */
+body.demo-meeting-on .content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Sections: never exceed container width */
+body.demo-meeting-on .sec,
+body.demo-meeting-on .sec.active {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Panels, grids: fully contained */
+body.demo-meeting-on .panel,
+body.demo-meeting-on .kpi-row {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Action ticker: inside SWAT panel, left of presenter */
+body.demo-meeting-on #demo-action-ticker {
+  right: calc(var(--demo-presenter-w) + 16px);
+}
+
+/* Legacy components replaced by meeting frame */
+body.demo-meeting-on #demo-narrator { display: none !important; }
+body.demo-meeting-on #demo-avatar   { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    DEMO FOCUS MODE — Cinematic Spotlight + Grey-out + Click System
@@ -1567,7 +1624,7 @@ body.demo-focus-on .ni.demo-nav-pulse {
 }
 
 /* ── Topbar dims slightly during focus ── */
-body.demo-focus-on .topbar { transition:opacity .4s ease; opacity:.6; }
+body.demo-focus-on .topbar { transition:opacity .4s ease; opacity:.85; }
 body.demo-focus-on .topbar:hover { opacity:1; }
 
 /* ── When no pointer target, show full section clearly ── */
@@ -10366,6 +10423,37 @@ function showDemoAvatar(){
 }
 
 // ── Pointer & ring system ─────────────────────────────────────────────────
+
+// Returns the VISIBLE bounding rect of el, clamped by every overflow ancestor
+// and the viewport. Prevents cursor/ring/spotlight from tracking into the
+// off-screen portion of a horizontally-scrollable table.
+function _visibleRect(el){
+  const r = el.getBoundingClientRect();
+  let left = r.left, top = r.top, right = r.right, bottom = r.bottom;
+  let p = el.parentElement;
+  while(p && p !== document.documentElement){
+    const cs = window.getComputedStyle(p);
+    if(/auto|hidden|scroll/.test(cs.overflow + ' ' + cs.overflowX + ' ' + cs.overflowY)){
+      const pr = p.getBoundingClientRect();
+      left   = Math.max(left,   pr.left);
+      top    = Math.max(top,    pr.top);
+      right  = Math.min(right,  pr.right);
+      bottom = Math.min(bottom, pr.bottom);
+    }
+    p = p.parentElement;
+  }
+  left   = Math.max(0, left);
+  top    = Math.max(0, top);
+  const _presW = document.body.classList.contains('demo-meeting-on')
+    ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 360)
+    : 0;
+  right  = Math.min(window.innerWidth - _presW, right);
+  bottom = Math.min(window.innerHeight, bottom);
+  return { left, top, right, bottom,
+           width:  Math.max(0, right  - left),
+           height: Math.max(0, bottom - top) };
+}
+
 function demoPointAt(selector){
   _clearPointer();
   if(!selector) { _hideSpotlight(); return; }
@@ -10384,7 +10472,7 @@ function demoPointAt(selector){
 
   // ── STEP 1 (200ms): Move cursor to target ─────────────────────────
   setTimeout(()=>{
-    const tRect = target.getBoundingClientRect();
+    const tRect = _visibleRect(target);
     const tx = tRect.left + tRect.width / 2;
     const ty = tRect.top  + tRect.height / 2;
 
@@ -10404,7 +10492,7 @@ function demoPointAt(selector){
         if(cursor){ cursor.classList.remove('hovering'); cursor.classList.add('clicking'); setTimeout(()=>cursor.classList.remove('clicking'),300); }
 
         const ripple = document.getElementById('demo-click-ripple');
-        const tRect2 = target.getBoundingClientRect();
+        const tRect2 = _visibleRect(target);
         const tx2 = tRect2.left + tRect2.width / 2;
         const ty2 = tRect2.top  + tRect2.height / 2;
         if(ripple){
@@ -10422,7 +10510,7 @@ function demoPointAt(selector){
 
           // ── STEP 5 (1900ms): Position avatar beside target ────────
           setTimeout(()=>{
-            const tRect3 = target.getBoundingClientRect();
+            const tRect3 = _visibleRect(target);
             const tx3 = tRect3.left + tRect3.width / 2;
             const ty3 = tRect3.top  + tRect3.height / 2;
 
@@ -10552,8 +10640,11 @@ function _showSpotlightOn(target){
   } else {
     const veil = document.getElementById('demo-veil');
     if(veil){ veil.style.opacity='0'; setTimeout(()=>{ if(veil.style.opacity==='0') veil.style.display='none'; },400); }
-    // Clamp to viewport so the spotlight box never bleeds outside the screen
-    const vpW2 = window.innerWidth;
+    // Clamp to SWAT panel boundary (excludes presenter panel on the right)
+    const _presW2 = document.body.classList.contains('demo-meeting-on')
+      ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 360)
+      : 0;
+    const vpW2 = window.innerWidth - _presW2;
     const vpH2 = window.innerHeight;
     const clLeft   = Math.max(0, sRect.left - pad);
     const clTop    = Math.max(0, sRect.top  - pad);
@@ -10673,6 +10764,18 @@ function startDemo(){
 
   const narrator = document.getElementById('demo-narrator');
   if(narrator) narrator.style.display = 'block';
+
+  // Collapse sidebar so SWAT content gets maximum horizontal space
+  const _sb = document.getElementById('sidebar');
+  if(_sb && !_sb.classList.contains('collapsed')){
+    _sb.classList.add('collapsed');
+    document.querySelector('.main')?.classList.add('expanded');
+    const _sbBtn = _sb.querySelector('.sb-collapse-btn');
+    if(_sbBtn) _sbBtn.textContent = '▶';
+    window._demoDidCollapseSidebar = true;
+  } else {
+    window._demoDidCollapseSidebar = false;
+  }
 
   // ── Activate meeting frame ──────────────────────────────────────────
   document.body.classList.add('demo-meeting-on');
@@ -10800,6 +10903,18 @@ function exitDemo(){
 
   // Remove progressive reveal focus mode
   document.body.classList.remove('demo-focus-on');
+  // Restore sidebar if demo collapsed it
+  if(window._demoDidCollapseSidebar){
+    const _sb2 = document.getElementById('sidebar');
+    if(_sb2){
+      _sb2.classList.remove('collapsed');
+      document.querySelector('.main')?.classList.remove('expanded');
+      const _sbBtn2 = _sb2.querySelector('.sb-collapse-btn');
+      if(_sbBtn2) _sbBtn2.textContent = '◀';
+    }
+    window._demoDidCollapseSidebar = false;
+  }
+
   // Deactivate meeting frame
   document.body.classList.remove('demo-meeting-on');
   const mtgFrame = document.getElementById('meeting-frame');
