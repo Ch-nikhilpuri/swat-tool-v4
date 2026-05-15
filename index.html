@@ -10050,10 +10050,13 @@ const DEMO_SCRIPT = [
   {
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
-    narration:"Now I'm looking at the Supplier Commit Tracker. Every Purchase Order line, four milestone columns — Purchase Order Acknowledgement, Production Start, Production Finish, Shipment. Here's the thing most people don't realise — most of our Purchase Orders don't actually contain production or shipment dates. We only give the supplier a need-by date. SWAT fills in the rest. It calculates when production should have started, when it should finish, and when shipment should happen based on the lead times and manufacturing window. So I'm looking at a complete timeline that nobody had to enter manually. Red cells are overdue milestones. That's where I focus.",
-    duration:20000, pointer:null,  // Hold on full-page view — audience absorbs the page intro
+    narration:"Now I'm looking at the Supplier Commit Tracker. Here's the thing most people don't realize — most of our purchase orders don't actually contain production or shipment dates. SWAT fills in the rest. So I'm looking at a complete timeline that nobody had to enter manually. That's where I focus.",
+    duration:20000, pointer:null,  // 0–6s: hold on the full-page view so the audience can absorb the KPI strip + table
     subPoints:[
-      {at:11000, pointer:'#commit-milestone-tbody tr:first-child'},  // Highlight whole TrailFlex row when narrator transitions to specifics ("complete timeline… red cells are overdue")
+      {at:7500,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)'},  // POA cell (22d OVERDUE) — when narrator says "SWAT fills in the rest"
+      {at:11000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(7)'},  // PS cell (12d OVERDUE)
+      {at:14000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(8)'},  // PF cell (DUE 9d)
+      {at:16500, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},  // SH cell (DUE 15d) — "complete timeline that nobody had to enter manually"
     ],
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
