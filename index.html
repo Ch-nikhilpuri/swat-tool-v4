@@ -5754,7 +5754,7 @@ function renderPOTable(){
 // SWAT INFERRED MILESTONE MODEL v2 — top-level scope
 // ═══════════════════════════════════════════════════════════════
 function calcOnTimeProb(row){
-  const today = new Date('2026-04-28');
+  const today = new Date('2026-03-13');
   const TRANS_LT = {
     'ALCO-01':2,'FORGE-03':2,'COAT-04':2,'RIMS-06':2,'WELD-07':2,
     'TIRE-09':2,'SAFE-14':2,'HDW-15':2,'PACK-16':2,'STEEL-20':2,
@@ -5853,7 +5853,7 @@ function calcOnTimeProb(row){
 }
 
 function renderCommitRow(row){
-  const today=new Date('2026-04-28');
+  const today=new Date('2026-03-13');
   const s=sup(row.sid)||{};
   const prob=calcOnTimeProb(row);
   const rc=row._riskClass||'MEDIUM';
@@ -9688,7 +9688,7 @@ function agentAutoProcessMsg(msgId){
 
     // Apply to COMMIT_DATA
     if(cdRow){
-      const td = new Date('2026-04-28');
+      const td = new Date('2026-03-13');
       const todayISO = td.toISOString().slice(0,10);
       if(isAck&&cdRow.milestones?.POA?.status==='MISSING'){
         cdRow.milestones.POA={baseline:cdRow.milestones.POA?.baseline||'2026-04-01',actual:todayISO,status:'ON_TIME',daysVar:0};
@@ -10031,6 +10031,9 @@ const DEMO_SCRIPT = [
     text:'The Checkpoint column tells Sarah exactly which conversation to have with each supplier.',
     narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For ISS-1038, the checkpoint is PF — Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
     duration:18000, pointer:'#wl-tbody tr:first-child td:nth-child(12)',
+    subPoints:[
+      {at:9500, pointer:'#wl-tbody tr:nth-child(2) td:nth-child(12)'},  // Move to ISS-1038 checkpoint (PF) when narration shifts
+    ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
   },
@@ -10038,7 +10041,14 @@ const DEMO_SCRIPT = [
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
     narration:"Now I'm looking at the Supplier Commit Tracker. Every Purchase Order line, four milestone columns — Purchase Order Acknowledgement, Production Start, Production Finish, Shipment. Here's the thing most people don't realise — most of our Purchase Orders don't actually contain production or shipment dates. We only give the supplier a need-by date. SWAT fills in the rest. It calculates when production should have started, when it should finish, and when shipment should happen based on the lead times and manufacturing window. So I'm looking at a complete timeline that nobody had to enter manually. Red cells are overdue milestones. That's where I focus.",
-    duration:20000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)',
+    duration:20000, pointer:'#commit-milestone-tbody tr:first-child',
+    subPoints:[
+      {at:7000,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)'},  // POA cell (Purchase Order Acknowledgement)
+      {at:11000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(7)'},  // PS cell (Production Start)
+      {at:14000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(8)'},  // PF cell (Production Finish)
+      {at:16500, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},  // SH cell (Shipment)
+      {at:19000, pointer:'#commit-milestone-tbody tr:first-child'},                  // Back to full row
+    ],
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
       {type:'warn',ico:'🔴',txt:'<strong>P.O. 2026-08821</strong> — P.O.A. 22d overdue · CRITICAL',delay:2500},
@@ -10197,7 +10207,12 @@ const DEMO_SCRIPT_PLANNER = [
     section:'commits', label:'7:12 AM · VALIDATION', title:'David validates the recovery against supplier commits',
     text:'Before committing to a schedule change, David checks the milestone data.',
     narration:"Before I walk into the standup and say we're moving the Dirt build, I need to validate it. The Supplier Commit Tracker shows me every Purchase Order line with its milestone dates. TrailFlex has a revised ship date of April fourteenth. That's three days before my adjusted production start. Buffer confirmed. AeroCarbon still has no production finish date confirmed. That's my evidence for the escalation request. I'm not walking into the meeting with a hunch. I'm walking in with — here's the data, here's the simulation, here's my recommendation, and here's the commit timeline that supports it. It takes about thirty seconds to validate. Then I'm ready.",
-    duration:18000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)',
+    duration:18000, pointer:'#commit-milestone-tbody tr:first-child',
+    subPoints:[
+      {at:5000,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},   // TrailFlex SH (revised ship Apr 14)
+      {at:10500, pointer:'#commit-milestone-tbody tr:nth-child(3) td:nth-child(8)'},  // AeroCarbon PF (no production finish confirmed)
+      {at:14000, pointer:'#commit-milestone-tbody tr:first-child'},                   // Back to row context
+    ],
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
       {type:'success',ico:'✅',txt:'<strong>TrailFlex:</strong> revised ship Apr 14 — buffer OK',delay:2000},
@@ -10638,6 +10653,53 @@ function _clearRingOnly(){
   if(sp){sp.innerHTML='';sp.style.display='none';}
 }
 
+// ── Sub-point spotlight movement ──────────────────────────────────────────
+// Lightweight version of demoPointAt: scrolls a NEW target into view and
+// moves the spotlight + cursor + ring to it. Used for moving focus between
+// cells within a single demo step (e.g. POA → PF → SH during one narration).
+let _demoSubPointTimers = [];
+function _clearSubPointTimers(){
+  _demoSubPointTimers.forEach(t=>clearTimeout(t));
+  _demoSubPointTimers = [];
+}
+function _demoMoveSpotlight(selector){
+  if(!_demoRunning) return;
+  const target = typeof selector==='string' ? document.querySelector(selector) : selector;
+  if(!target) return;
+  // Scroll target into view (centers both axes so off-screen cells slide in)
+  target.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+  setTimeout(()=>{
+    if(!_demoRunning) return;
+    _showSpotlightOn(target);
+    const tRect = _visibleRect(target);
+    // Glide cursor to centre of new target
+    const cursor = document.getElementById('demo-cursor');
+    if(cursor){
+      cursor.classList.add('visible');
+      cursor.classList.remove('clicking');
+      cursor.style.left = (tRect.left + tRect.width/2) + 'px';
+      cursor.style.top  = (tRect.top  + tRect.height/2) + 'px';
+    }
+    // Refresh the legacy ring on the new target
+    _clearRingOnly();
+    const ring = document.createElement('div');
+    ring.className = 'demo-ring';
+    const rpad = 5;
+    ring.style.cssText =
+      `top:${tRect.top - rpad}px;left:${tRect.left - rpad}px;` +
+      `width:${tRect.width + rpad*2}px;height:${tRect.height + rpad*2}px;`;
+    const spotlight = document.getElementById('demo-spotlight');
+    if(spotlight){ spotlight.appendChild(ring); spotlight.style.display='block'; }
+    // Re-aim the pointer line from the existing avatar/presenter towards the new target
+    const tx = tRect.left + tRect.width/2;
+    const ty = tRect.top  + tRect.height/2;
+    const line = document.getElementById('demo-pointer-line');
+    const dot  = document.getElementById('demo-pointer-dot');
+    if(line){ line.setAttribute('x2', tx); line.setAttribute('y2', ty); }
+    if(dot){  dot.setAttribute('cx', tx); dot.setAttribute('cy', ty); }
+  }, 380);
+}
+
 // Show spotlight on a specific target element
 function _showSpotlightOn(target){
   const sBox = document.getElementById('demo-spotlight-box');
@@ -10942,6 +11004,7 @@ function exitDemo(){
   _demoAuto    = false;
   _demoSpeaking= false;
   clearTimeout(_demoAutoTimer);
+  _clearSubPointTimers();
   if(window.speechSynthesis) speechSynthesis.cancel();
 
   const narrator = document.getElementById('demo-narrator');
@@ -10988,6 +11051,7 @@ function exitDemo(){
 
 // ── Manual step navigation ───────────────────────────────────────────────────
 function demoStep(dir){
+  _clearSubPointTimers();
   _clearPointer(); _clearRing(); clearDemoTicker();
   const av=document.getElementById('demo-avatar');
   if(av) av.classList.remove('av-pointing','av-speaking');
@@ -11144,6 +11208,9 @@ function renderDemoStep(){
   const av=document.getElementById('demo-avatar');
   if(av) av.classList.remove('av-pointing');
 
+  // Cancel any leftover sub-point timers from the previous step
+  _clearSubPointTimers();
+
   setTimeout(()=>{
     const ptr = step.pointer || step.highlight;
     if(ptr){
@@ -11157,6 +11224,18 @@ function renderDemoStep(){
       if(el){ el.classList.remove('demo-pulse'); void el.offsetWidth; el.classList.add('demo-pulse'); }
     }
     if(step.ticker) demoShowTicker(step.ticker);
+
+    // ── Schedule sub-point moves so the spotlight follows the narration ──
+    // Each entry: { at: ms_offset_from_now, pointer: selector }
+    if(Array.isArray(step.subPoints)){
+      step.subPoints.forEach(sub=>{
+        if(!sub || !sub.pointer) return;
+        const tid = setTimeout(()=>{
+          if(_demoRunning) _demoMoveSpotlight(sub.pointer);
+        }, Math.max(0, sub.at || 0));
+        _demoSubPointTimers.push(tid);
+      });
+    }
   }, 1100);
 
   // ── Speak narration then auto-advance ───────────────────────────────
