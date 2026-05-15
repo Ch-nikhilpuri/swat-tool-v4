@@ -5839,7 +5839,13 @@ function calcOnTimeProb(row){
   row._dimensions={confirmGap:Math.round(cgr),timeCompression:Math.round(tcr),reliability:Math.round(srr),criticality:Math.round(critR),complexity:Math.round(ocr),recovery:Math.round(rc2)};
   row._inferredSchedule={reqPOA:reqPOA.toISOString().slice(0,10),reqPS:reqPS.toISOString().slice(0,10),reqPF:reqPF.toISOString().slice(0,10),reqSH:reqSH.toISOString().slice(0,10),daysToShip:dSH,confirmedUpTo:conf};
   const rc3=row._riskClass;
-  row._buyerAction=rc3==='CRITICAL'&&conf==='NONE'&&ov.POA>5?'ESCALATE NOW - No POA after '+ov.POA+'d. Call supplier today.'
+  // Buyer action text — prioritised cases match what the demo narrator says aloud
+  row._buyerAction=
+    // POA significantly overdue → escalation agent auto-sent email (demo: TrailFlex Rear Shock)
+    (conf==='NONE' && ov.POA>=15)?'ESCALATE NOW — Auto-email sent to supplier. POA '+ov.POA+'d overdue. Call as follow-up.'
+    // PS confirmed but PF missing → chase production finish (demo: AeroCarbon Frameset)
+    :(conf==='PS' && (st.PF==='MISSING'))?'CHASE PF — Production Finish missing. Request confirmation by EOD.'
+    :rc3==='CRITICAL'&&conf==='NONE'&&ov.POA>5?'ESCALATE NOW - No POA after '+ov.POA+'d. Call supplier today.'
     :rc3==='CRITICAL'&&tcr>40?'ESCALATE - Insufficient time remaining. Evaluate air freight.'
     :rc3==='CRITICAL'?'ESCALATE - Multiple risk factors. Management escalation required.'
     :rc3==='HIGH'&&conf==='NONE'?'CONTACT - POA overdue '+ov.POA+'d. Request confirmation by EOD.'
@@ -10020,7 +10026,10 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:47 AM · TRIAGE', title:'Sarah works her Issue Worklist',
     text:'Twelve open supply risks, ranked by priority score — work from the top.',
     narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue is CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. And look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
-    duration:18000, cursorOnly:true, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
+    duration:18000, cursorOnly:true, pointer:null,
+    subPoints:[
+      {at:5500, pointer:'#wl-tbody tr:first-child td:nth-child(7)'},  // +22d Proj. Late cell when narrator says "Twenty-two days projected late"
+    ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'success',ico:'📋',txt:'<strong>Worklist ranked</strong> — 12 issues scored by model',delay:1500},
@@ -10030,9 +10039,10 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:49 AM · CHECKPOINTS', title:'Sarah reads the blocking milestones',
     text:'The Checkpoint column tells Sarah exactly which conversation to have with each supplier.',
     narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For ISS-1038, the checkpoint is PF — Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
-    duration:18000, cursorOnly:true, pointer:'#wl-tbody tr:first-child td:nth-child(12)',
+    duration:18000, cursorOnly:true, pointer:null,
     subPoints:[
-      {at:9500, pointer:'#wl-tbody tr:nth-child(2) td:nth-child(12)'},  // Move to ISS-1038 checkpoint (PF) when narration shifts
+      {at:3000,  pointer:'#wl-tbody tr:first-child td:nth-child(12)'},  // ISS-1041 checkpoint (POA) when narrator says "for ISS-1041"
+      {at:11000, pointer:'#wl-tbody tr:nth-child(2) td:nth-child(12)'}, // ISS-1038 checkpoint (PF) when narrator says "for ISS-1038"
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
@@ -10041,12 +10051,9 @@ const DEMO_SCRIPT = [
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
     narration:"Now I'm looking at the Supplier Commit Tracker. Every Purchase Order line, four milestone columns — Purchase Order Acknowledgement, Production Start, Production Finish, Shipment. Here's the thing most people don't realise — most of our Purchase Orders don't actually contain production or shipment dates. We only give the supplier a need-by date. SWAT fills in the rest. It calculates when production should have started, when it should finish, and when shipment should happen based on the lead times and manufacturing window. So I'm looking at a complete timeline that nobody had to enter manually. Red cells are overdue milestones. That's where I focus.",
-    duration:20000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)',
+    duration:20000, pointer:null,  // Hold on full-page view — audience absorbs the page intro
     subPoints:[
-      {at:8000,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(7)'},  // PS cell (Production Start)
-      {at:12000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(8)'},  // PF cell (Production Finish)
-      {at:15500, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},  // SH cell (Shipment)
-      {at:18000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)'},  // Back to POA (the red one — "Red cells are overdue")
+      {at:11000, pointer:'#commit-milestone-tbody tr:first-child'},  // Highlight whole TrailFlex row when narrator transitions to specifics ("complete timeline… red cells are overdue")
     ],
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
