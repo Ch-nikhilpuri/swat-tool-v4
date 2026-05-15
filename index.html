@@ -10023,7 +10023,7 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:47 AM · TRIAGE', title:'Sarah works her Issue Worklist',
     text:'Twelve open supply risks, ranked by priority score — work from the top.',
     narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue is CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. And look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
-    duration:18000, pointer:'#wl-tbody tr:first-child',
+    duration:18000, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'success',ico:'📋',txt:'<strong>Worklist ranked</strong> — 12 issues scored by model',delay:1500},
@@ -10033,7 +10033,7 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:49 AM · CHECKPOINTS', title:'Sarah reads the blocking milestones',
     text:'The Checkpoint column tells Sarah exactly which conversation to have with each supplier.',
     narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For ISS-1038, the checkpoint is PF — Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
-    duration:18000, pointer:'#sec-worklist .panel',
+    duration:18000, pointer:'#wl-tbody tr:first-child td:nth-child(12)',
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
   },
@@ -10041,7 +10041,7 @@ const DEMO_SCRIPT = [
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
     narration:"Now I'm looking at the Supplier Commit Tracker. Every Purchase Order line, four milestone columns — Purchase Order Acknowledgement, Production Start, Production Finish, Shipment. Here's the thing most people don't realise — most of our Purchase Orders don't actually contain production or shipment dates. We only give the supplier a need-by date. SWAT fills in the rest. It calculates when production should have started, when it should finish, and when shipment should happen based on the lead times and manufacturing window. So I'm looking at a complete timeline that nobody had to enter manually. Red cells are overdue milestones. That's where I focus.",
-    duration:20000, pointer:'#commit-milestone-tbody tr:first-child',
+    duration:20000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)',
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
       {type:'warn',ico:'🔴',txt:'<strong>P.O. 2026-08821</strong> — P.O.A. 22d overdue · CRITICAL',delay:2500},
@@ -10158,7 +10158,7 @@ const DEMO_SCRIPT_PLANNER = [
     section:'worklist', label:'6:58 AM · DRILL-DOWN', title:'David checks which parts are blocking production',
     text:'The Issue Worklist shows exactly which components are late and by how many days.',
     narration:"I click the red Dirt-April cell and it filters the worklist to the exact parts causing that risk. The rear shock absorber from TrailFlex — twenty-two days projected late. That's the one killing my April build. I can see the Projected Late column — that's not how late it is today, that's how late it's going to be when it arrives. Twenty-two days means I can't build forty-two Dirt bikes next month. That's real revenue. I need to know if I should pull the Sports build forward or push the Dirt build back. SWAT just told me the problem. Now I need to figure out the response.",
-    duration:18000, pointer:'#wl-tbody tr:first-child',
+    duration:18000, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'error',ico:'🔴',txt:'<strong>Line risk:</strong> Dirt Apr — 42 units at risk',delay:2000},
@@ -10200,7 +10200,7 @@ const DEMO_SCRIPT_PLANNER = [
     section:'commits', label:'7:12 AM · VALIDATION', title:'David validates the recovery against supplier commits',
     text:'Before committing to a schedule change, David checks the milestone data.',
     narration:"Before I walk into the standup and say we're moving the Dirt build, I need to validate it. The Supplier Commit Tracker shows me every Purchase Order line with its milestone dates. TrailFlex has a revised ship date of April fourteenth. That's three days before my adjusted production start. Buffer confirmed. AeroCarbon still has no production finish date confirmed. That's my evidence for the escalation request. I'm not walking into the meeting with a hunch. I'm walking in with — here's the data, here's the simulation, here's my recommendation, and here's the commit timeline that supports it. It takes about thirty seconds to validate. Then I'm ready.",
-    duration:18000, pointer:'#commit-milestone-tbody tr:first-child',
+    duration:18000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)',
     fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
     ticker:[
       {type:'success',ico:'✅',txt:'<strong>TrailFlex:</strong> revised ship Apr 14 — buffer OK',delay:2000},
@@ -10251,7 +10251,7 @@ const DEMO_SCRIPT_PLANT = [
     section:'worklist', label:'6:34 AM · CRITICAL FILTER', title:'Maria filters to CRITICAL issues only',
     text:'Maria doesn\'t work HIGH or MEDIUM — she focuses on what needs her authority.',
     narration:"I open the Issue Worklist and filter straight to CRITICAL. I don't work HIGH or MEDIUM issues — that's for Sarah and her team. I only need to see the four items that might need my authority to resolve. ISS-1041 — rear shock absorber, twenty-two days projected late, no Purchase Order Acknowledgement. That's a potential line stoppage and it might need a VP call to the supplier's exec team. ISS-1038 — frameset, no production finish confirmed. I need the business impact — which customer orders are affected? What's the financial exposure? I can see it all right here without asking anyone.",
-    duration:20000, pointer:'#wl-tbody tr:first-child',
+    duration:20000, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'error',ico:'🚨',txt:'<strong>4 CRITICAL issues</strong> — Plant Manager review',delay:1500},
@@ -10541,8 +10541,9 @@ function demoPointAt(selector){
   const AV_W = 90, AV_H = 180;
   const PAD  = 12;
 
-  // ── STEP 0: Smooth-scroll target into view ────────────────────────
-  target.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
+  // ── STEP 0: Smooth-scroll target into view (center BOTH axes so off-screen
+  //           cells in wide tables get horizontally scrolled into the SWAT frame)
+  target.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
 
   // ── STEP 1 (200ms): Move cursor to target ─────────────────────────
   setTimeout(()=>{
