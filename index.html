@@ -10055,12 +10055,17 @@ const DEMO_SCRIPT = [
     // 1.5-second silent pause when the page first opens so the audience can absorb
     // the KPI strip + risk-assessment table before Sarah starts narrating
     narrationDelay:1500,
-    pointer:null,  // No initial highlight — full page view
+    pointer:null,  // No initial highlight — full page view (intro: "Now I'm looking at the Supplier Commit Tracker")
     subPoints:[
-      {at:7500,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)'},  // POA cell (22d OVERDUE) — when narrator says "SWAT fills in the rest"
-      {at:11000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(7)'},  // PS cell (12d OVERDUE)
-      {at:14000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(8)'},  // PF cell (DUE 9d)
-      {at:16500, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},  // SH cell (DUE 15d) — "complete timeline that nobody had to enter manually"
+      // ~4 s into the narration, when Sarah says "Here's the thing most people don't realize…",
+      // highlight the FULL milestone timeline strip (POA → PS → PF → SH) of the first row
+      // as one unified region — visually demonstrating "the complete timeline SWAT filled in".
+      {at:4500, pointer:[
+        '#commit-milestone-tbody tr:first-child td:nth-child(6)',  // POA
+        '#commit-milestone-tbody tr:first-child td:nth-child(7)',  // PS
+        '#commit-milestone-tbody tr:first-child td:nth-child(8)',  // PF
+        '#commit-milestone-tbody tr:first-child td:nth-child(9)',  // SH
+      ]},
     ],
     fn:()=>{
       try{
@@ -10708,17 +10713,40 @@ function _clearSubPointTimers(){
 }
 function _demoMoveSpotlight(selector){
   if(!_demoRunning) return;
-  const target = typeof selector==='string' ? document.querySelector(selector) : selector;
-  if(!target) return;
-  // Scroll target into view (centers both axes so off-screen cells slide in)
-  target.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+  // Resolve selector → one or more target elements
+  // selector can be a string, an Element, OR an array of strings/Elements
+  // When an array is passed, the spotlight covers the union (bounding rectangle)
+  let targets = [];
+  if(Array.isArray(selector)){
+    targets = selector.map(s=>typeof s==='string' ? document.querySelector(s) : s).filter(Boolean);
+  } else {
+    const t = typeof selector==='string' ? document.querySelector(selector) : selector;
+    if(t) targets = [t];
+  }
+  if(!targets.length) return;
+
+  // Scroll the FIRST target into view (centers both axes)
+  targets[0].scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+
   setTimeout(()=>{
     if(!_demoRunning) return;
-    const tRect = _visibleRect(target);
+
+    // Compute the union visible-rect across all targets
+    let L=Infinity,T=Infinity,R=-Infinity,B=-Infinity;
+    targets.forEach(t=>{
+      const r = _visibleRect(t);
+      if(r.width<=0||r.height<=0) return;
+      L = Math.min(L, r.left);
+      T = Math.min(T, r.top);
+      R = Math.max(R, r.left + r.width);
+      B = Math.max(B, r.top  + r.height);
+    });
+    if(!isFinite(L)||!isFinite(T)) return;
+    const tRect = { left:L, top:T, width:R-L, height:B-T };
     const cx = tRect.left + tRect.width/2;
     const cy = tRect.top  + tRect.height/2;
 
-    // Glide cursor to centre of new target (always — both modes)
+    // Glide cursor to centre of the unioned region (always — both modes)
     const cursor = document.getElementById('demo-cursor');
     if(cursor){
       cursor.classList.add('visible');
@@ -10735,8 +10763,33 @@ function _demoMoveSpotlight(selector){
       return;
     }
 
-    _showSpotlightOn(target);
-    // Refresh the legacy ring on the new target
+    // Position the spotlight box. Single target → reuse _showSpotlightOn so
+    // TR/KPI-row special handling still applies. Multi target → manually paint
+    // the union rect (with viewport clamping).
+    if(targets.length === 1){
+      _showSpotlightOn(targets[0]);
+    } else {
+      const sBox = document.getElementById('demo-spotlight-box');
+      if(sBox){
+        const pad = 12;
+        const _presW = document.body.classList.contains('demo-meeting-on')
+          ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--demo-presenter-w')) || 240)
+          : 0;
+        const vpW = window.innerWidth - _presW;
+        const vpH = window.innerHeight;
+        const clL = Math.max(0, tRect.left - pad);
+        const clT = Math.max(0, tRect.top  - pad);
+        const clR = Math.min(vpW, tRect.left + tRect.width  + pad);
+        const clB = Math.min(vpH, tRect.top  + tRect.height + pad);
+        sBox.style.left   = clL + 'px';
+        sBox.style.top    = clT + 'px';
+        sBox.style.width  = Math.max(0, clR - clL) + 'px';
+        sBox.style.height = Math.max(0, clB - clT) + 'px';
+        sBox.classList.add('active');
+      }
+    }
+
+    // Refresh the legacy ring on the unioned region
     _clearRingOnly();
     const ring = document.createElement('div');
     ring.className = 'demo-ring';
@@ -10746,7 +10799,7 @@ function _demoMoveSpotlight(selector){
       `width:${tRect.width + rpad*2}px;height:${tRect.height + rpad*2}px;`;
     const spotlight = document.getElementById('demo-spotlight');
     if(spotlight){ spotlight.appendChild(ring); spotlight.style.display='block'; }
-    // Re-aim the pointer line from the presenter towards the new target
+    // Re-aim the pointer line from the presenter towards the union centre
     const line = document.getElementById('demo-pointer-line');
     const dot  = document.getElementById('demo-pointer-dot');
     if(line){ line.setAttribute('x2', cx); line.setAttribute('y2', cy); }
