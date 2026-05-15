@@ -1517,25 +1517,49 @@ body.demo-meeting-on .content {
   overflow-x: auto;
 }
 
-/* Make the horizontal scrollbar visible and easy to grab */
-body.demo-meeting-on .content::-webkit-scrollbar {
-  height: 12px;
+/* Make BOTH the .content scrollbar and per-table scrollbars prominent */
+body.demo-meeting-on .content::-webkit-scrollbar,
+body.demo-meeting-on .sec [style*="overflow-x"]::-webkit-scrollbar,
+body.demo-meeting-on .sec [style*="overflow:auto"]::-webkit-scrollbar {
+  height: 14px;
   width: 10px;
 }
-body.demo-meeting-on .content::-webkit-scrollbar-track {
-  background: rgba(0,0,0,.05);
-  border-radius: 6px;
+body.demo-meeting-on .content::-webkit-scrollbar-track,
+body.demo-meeting-on .sec [style*="overflow-x"]::-webkit-scrollbar-track,
+body.demo-meeting-on .sec [style*="overflow:auto"]::-webkit-scrollbar-track {
+  background: rgba(217,119,6,.08);
+  border-radius: 7px;
 }
-body.demo-meeting-on .content::-webkit-scrollbar-thumb {
-  background: rgba(217,119,6,.35);
-  border-radius: 6px;
+body.demo-meeting-on .content::-webkit-scrollbar-thumb,
+body.demo-meeting-on .sec [style*="overflow-x"]::-webkit-scrollbar-thumb,
+body.demo-meeting-on .sec [style*="overflow:auto"]::-webkit-scrollbar-thumb {
+  background: rgba(217,119,6,.55);
+  border-radius: 7px;
   border: 2px solid transparent;
   background-clip: padding-box;
+  min-width: 40px;
 }
-body.demo-meeting-on .content::-webkit-scrollbar-thumb:hover {
-  background: rgba(217,119,6,.6);
+body.demo-meeting-on .content::-webkit-scrollbar-thumb:hover,
+body.demo-meeting-on .sec [style*="overflow-x"]::-webkit-scrollbar-thumb:hover,
+body.demo-meeting-on .sec [style*="overflow:auto"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(217,119,6,.85);
   background-clip: padding-box;
   border: 2px solid transparent;
+}
+
+/* Allow .panel to show inner scrollbars during demo (override its overflow:hidden) */
+body.demo-meeting-on .panel {
+  overflow: visible;
+}
+
+/* Force all table wrappers to be scrollable with visible scrollbar */
+body.demo-meeting-on .sec [style*="overflow-x:auto"],
+body.demo-meeting-on .sec [style*="overflow-x: auto"] {
+  overflow-x: auto !important;
+  overflow-y: visible;
+  scrollbar-color: rgba(217,119,6,.55) rgba(217,119,6,.08);
+  scrollbar-width: auto;
+  max-width: 100%;
 }
 
 /* Sections: allow content to extend horizontally so .content scrollbar engages */
