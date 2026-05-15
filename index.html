@@ -1547,19 +1547,46 @@ body.demo-meeting-on .sec [style*="overflow:auto"]::-webkit-scrollbar-thumb:hove
   border: 2px solid transparent;
 }
 
-/* Allow .panel to show inner scrollbars during demo (override its overflow:hidden) */
+/* Defeat all intermediate horizontal-overflow containers during demo, so wide
+   tables push the section wider and engage .content's bottom horizontal scrollbar */
 body.demo-meeting-on .panel {
-  overflow: visible;
+  overflow: visible !important;
+}
+body.demo-meeting-on .sec [style*="overflow-x:auto"],
+body.demo-meeting-on .sec [style*="overflow-x: auto"],
+body.demo-meeting-on .sec [style*="overflow:auto"],
+body.demo-meeting-on .sec [style*="overflow: auto"] {
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  max-width: none !important;
 }
 
-/* Force all table wrappers to be scrollable with visible scrollbar */
-body.demo-meeting-on .sec [style*="overflow-x:auto"],
-body.demo-meeting-on .sec [style*="overflow-x: auto"] {
-  overflow-x: auto !important;
-  overflow-y: visible;
-  scrollbar-color: rgba(217,119,6,.55) rgba(217,119,6,.08);
+/* Force .content to ALWAYS show its horizontal scrollbar (never hide it) */
+body.demo-meeting-on .content {
+  overflow-x: scroll !important;
+  scrollbar-color: rgba(217,119,6,.65) rgba(217,119,6,.1);
   scrollbar-width: auto;
-  max-width: 100%;
+}
+
+/* The scrollbar at the bottom of the SWAT frame — explicit, prominent, sticky */
+body.demo-meeting-on .content::-webkit-scrollbar:horizontal {
+  height: 16px;
+}
+body.demo-meeting-on .content::-webkit-scrollbar-track:horizontal {
+  background: rgba(217,119,6,.12);
+  border-top: 1px solid rgba(217,119,6,.2);
+}
+body.demo-meeting-on .content::-webkit-scrollbar-thumb:horizontal {
+  background: rgba(217,119,6,.7);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  min-width: 60px;
+}
+body.demo-meeting-on .content::-webkit-scrollbar-thumb:horizontal:hover {
+  background: rgba(217,119,6,.95);
+  background-clip: padding-box;
+  border: 3px solid transparent;
 }
 
 /* Sections: allow content to extend horizontally so .content scrollbar engages */
