@@ -10026,9 +10026,9 @@ const DEMO_SCRIPT = [
     section:'worklist', label:'7:47 AM · TRIAGE', title:'Sarah works her Issue Worklist',
     text:'Twelve open supply risks, ranked by priority score — work from the top.',
     narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue is CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. And look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
-    duration:18000, cursorOnly:true, pointer:null,
+    duration:18000, pointer:null,
     subPoints:[
-      {at:5500, pointer:'#wl-tbody tr:first-child td:nth-child(7)'},  // +22d Proj. Late cell when narrator says "Twenty-two days projected late"
+      {at:5500, pointer:'#wl-tbody tr:first-child td:nth-child(7)'},  // +22d Proj. Late cell highlighted when narrator says "Twenty-two days projected late"
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
