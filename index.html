@@ -10041,8 +10041,8 @@ const DEMO_SCRIPT = [
     narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For ISS-1038, the checkpoint is PF — Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
     duration:18000, pointer:null,
     subPoints:[
-      {at:3000,  pointer:'#wl-tbody tr:first-child td:nth-child(12)'},  // ISS-1041 checkpoint (POA) — spotlight when narrator says "for ISS-1041"
-      {at:11000, pointer:'#wl-tbody tr:nth-child(2) td:nth-child(12)'}, // ISS-1038 checkpoint (PF) — spotlight when narrator says "for ISS-1038"
+      {at:3000,  pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(12)'},  // ISS-1041 checkpoint (POA) — spotlight when narrator says "for ISS-1041"
+      {at:11000, pointer:'#wl-tbody tr[data-id="ISS-1038"] td:nth-child(12)'},  // ISS-1038 checkpoint (PF) — spotlight when narrator says "for ISS-1038"
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
