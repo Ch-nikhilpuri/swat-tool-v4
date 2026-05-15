@@ -10104,11 +10104,11 @@ const DEMO_SCRIPT = [
     ],
   },
   {
-    section:'suppliers', label:'8:02 AM · SUPPLIER INTEL', title:'Sarah reviews supplier performance data',
+    section:'performance', label:'8:02 AM · SUPPLIER INTEL', title:'Sarah reviews supplier performance data',
     text:'OTIF, avg delay, lead time variance — the evidence behind every risk score.',
-    narration:"Last thing before my morning standup — I check supplier performance. TrailFlex is at seventy-two percent OTIF. SteelCore at sixty-eight. These numbers feed directly into the risk model. When TrailFlex misses a Purchase Order Acknowledgement, SWAT weights it heavier because their historical performance is poor. A ninety-five percent OTIF supplier missing a Purchase Order Acknowledgement gets a lower risk score because they almost always deliver. The model learns from history. I use this data in my supplier business reviews too. It's not anecdotal anymore. I can show them their trend line and have a data-backed conversation about what needs to change.",
-    duration:18000, pointer:'#supplier-cards',
-    fn:()=>{},
+    narration:"Last thing before my morning standup — I check supplier performance on the Performance Dashboard. TrailFlex is at seventy-two percent OTIF. SteelCore at sixty-eight. These numbers feed directly into the risk model. When TrailFlex misses a Purchase Order Acknowledgement, SWAT weights it heavier because their historical performance is poor. A ninety-five percent OTIF supplier missing a Purchase Order Acknowledgement gets a lower risk score because they almost always deliver. The model learns from history. I use this data in my supplier business reviews too. It's not anecdotal anymore. I can show them their trend line and have a data-backed conversation about what needs to change.",
+    duration:18000, pointer:'#ss-tbody tr:first-child td:nth-child(5)',
+    fn:()=>{try{renderSS();}catch(e){}},
     ticker:[],
   },
   {
