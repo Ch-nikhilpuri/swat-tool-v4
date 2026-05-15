@@ -10051,14 +10051,31 @@ const DEMO_SCRIPT = [
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
     narration:"Now I'm looking at the Supplier Commit Tracker. Here's the thing most people don't realize — most of our purchase orders don't actually contain production or shipment dates. SWAT fills in the rest. So I'm looking at a complete timeline that nobody had to enter manually. That's where I focus.",
-    duration:20000, pointer:null,  // 0–6s: hold on the full-page view so the audience can absorb the KPI strip + table
+    duration:22000,
+    // 1.5-second silent pause when the page first opens so the audience can absorb
+    // the KPI strip + risk-assessment table before Sarah starts narrating
+    narrationDelay:1500,
+    pointer:null,  // No initial highlight — full page view
     subPoints:[
       {at:7500,  pointer:'#commit-milestone-tbody tr:first-child td:nth-child(6)'},  // POA cell (22d OVERDUE) — when narrator says "SWAT fills in the rest"
       {at:11000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(7)'},  // PS cell (12d OVERDUE)
       {at:14000, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(8)'},  // PF cell (DUE 9d)
       {at:16500, pointer:'#commit-milestone-tbody tr:first-child td:nth-child(9)'},  // SH cell (DUE 15d) — "complete timeline that nobody had to enter manually"
     ],
-    fn:()=>{try{COMMIT_DATA.forEach(r=>calcOnTimeProb(r));renderCommits();}catch(e){}},
+    fn:()=>{
+      try{
+        COMMIT_DATA.forEach(r=>calcOnTimeProb(r));
+        renderCommits();
+        // Reset horizontal scroll to the LEFTMOST position so the audience starts
+        // at PO/PART · Description · Supplier columns — never mid-table.
+        // Run on next frame so the section is laid out before we scroll.
+        requestAnimationFrame(()=>{
+          const c = document.querySelector('.content');
+          if(c){ c.scrollLeft = 0; c.scrollTop = 0; }
+          window.scrollTo(0, 0);
+        });
+      }catch(e){}
+    },
     ticker:[
       {type:'warn',ico:'🔴',txt:'<strong>P.O. 2026-08821</strong> — P.O.A. 22d overdue · CRITICAL',delay:2500},
     ],
@@ -11263,26 +11280,31 @@ function renderDemoStep(){
     if(step.ticker) demoShowTicker(step.ticker);
 
     // ── Schedule sub-point moves so the spotlight follows the narration ──
-    // Each entry: { at: ms_offset_from_now, pointer: selector }
+    // Each entry: { at: ms_offset_relative_to_narration_start, pointer: selector }
+    // narrationDelay (if set) shifts all sub-points so they stay synced.
+    const _subShift = step.narrationDelay || 0;
     if(Array.isArray(step.subPoints)){
       step.subPoints.forEach(sub=>{
         if(!sub || !sub.pointer) return;
         const tid = setTimeout(()=>{
           if(_demoRunning) _demoMoveSpotlight(sub.pointer);
-        }, Math.max(0, sub.at || 0));
+        }, Math.max(0, (sub.at || 0) + _subShift));
         _demoSubPointTimers.push(tid);
       });
     }
   }, 1100);
 
   // ── Speak narration then auto-advance ───────────────────────────────
+  // step.narrationDelay (ms): adds an extra silent pause before narration starts,
+  // giving the audience time to absorb the page (e.g. Supplier Commit Tracker intro)
+  const _narrStart = 500 + (step.narrationDelay || 0);
   if(_demoVoiceOn && step.narration && window.speechSynthesis){
     setTimeout(()=>{
       demoSpeak(step.narration, ()=>{
         // After speaking ends, wait 1.5s then advance
         if(_demoAuto && _demoRunning) scheduleNextStep(1500);
       });
-    }, 500);
+    }, _narrStart);
   } else {
     // No voice: use step duration for auto-advance
     const dur = step.duration || 8000;
