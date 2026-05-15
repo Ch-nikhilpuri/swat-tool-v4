@@ -10050,7 +10050,7 @@ const DEMO_SCRIPT = [
   {
     section:'commits', label:'7:52 AM · COMMITS', title:'Sarah reviews the Supplier Commit Tracker',
     text:'Every PO line with four milestone dates — most of them inferred automatically.',
-    narration:"Now I'm looking at the Supplier Commit Tracker. Here's the thing most people don't realize — most of our purchase orders don't actually contain production or shipment dates. SWAT fills in the rest. So I'm looking at a complete timeline that nobody had to enter manually. That's where I focus.",
+    narration:"Now I'm looking at the Supplier Commit Tracker. Here's the thing most people don't realize. Most of our purchase orders don't actually contain production or shipment dates. SWAT fills in the rest. So I'm looking at a complete timeline that nobody had to enter manually. That's where I focus.",
     duration:22000,
     // 1.5-second silent pause when the page first opens so the audience can absorb
     // the KPI strip + risk-assessment table before Sarah starts narrating
@@ -10490,10 +10490,12 @@ function demoSpeak(text, onEnd){
     utt.onend  = ()=>{ idx++; speakNext(); };
     utt.onerror= ()=>{ idx++; speakNext(); };
     speechSynthesis.speak(utt);
-    idx++;
+    // BUG-FIX: previously incremented idx here AND in onend, which skipped
+    // every other sentence (e.g. dropped "Here's the thing most people don't realize…").
+    // idx is now incremented only when the utterance ends/errors.
 
-    // Update typewriter display while speaking
-    demoTypewriter(sentences.slice(0, idx).join(' '), idx * 800);
+    // Update typewriter display while speaking — show what's about to be spoken
+    demoTypewriter(sentences.slice(0, idx+1).join(' '), (idx+1) * 800);
   }
 
   speakNext();
