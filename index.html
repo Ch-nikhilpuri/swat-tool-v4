@@ -1507,19 +1507,42 @@ body.demo-meeting-on #critical-banner {
   top: auto;
 }
 
-/* Content: the ONLY scrollable region in the left panel */
+/* Content: scrollable region with BOTH horizontal and vertical scrollbars
+   The horizontal scrollbar appears at the bottom of the center SWAT frame
+   when content (e.g. wide tables, dashboards) exceeds the visible width. */
 body.demo-meeting-on .content {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
-/* Sections: never exceed container width */
+/* Make the horizontal scrollbar visible and easy to grab */
+body.demo-meeting-on .content::-webkit-scrollbar {
+  height: 12px;
+  width: 10px;
+}
+body.demo-meeting-on .content::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.05);
+  border-radius: 6px;
+}
+body.demo-meeting-on .content::-webkit-scrollbar-thumb {
+  background: rgba(217,119,6,.35);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+body.demo-meeting-on .content::-webkit-scrollbar-thumb:hover {
+  background: rgba(217,119,6,.6);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Sections: allow content to extend horizontally so .content scrollbar engages */
 body.demo-meeting-on .sec,
 body.demo-meeting-on .sec.active {
-  max-width: 100%;
-  overflow-x: hidden;
+  max-width: none;
+  overflow-x: visible;
 }
 
 /* Panels, grids: fully contained */
