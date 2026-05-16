@@ -10239,8 +10239,8 @@ const DEMO_SCRIPT = [
     label:'INTRODUCTION',
     title:'Meet Sarah Mitchell',
     text:'A Day in the Life of a Strategic Sourcing Buyer.',
-    narration:"This is Sarah Mitchell, a Strategic Sourcing Buyer responsible for managing supplier performance and preventing material shortages from disrupting production. Every day, Sarah balances supplier delays, late Purchase Orders, and changing production priorities across the manufacturing network. Her job is to identify risk before it impacts the plant.",
-    duration:13000, pointer:null, fn:()=>{}, ticker:[],
+    narration:"Hi, I'm Sarah Mitchell. I manage supplier performance and material availability across our manufacturing operation. Most of my day is spent dealing with supplier delays, changing production priorities, and trying to prevent shortages before they impact the plant. Let me show you how I use SWAT to focus on the issues that actually matter.",
+    duration:15000, pointer:null, fn:()=>{}, ticker:[],
   },
   {
     section:'dashboard', label:'7:42 AM · MORNING LOGIN', title:'Sarah opens SWAT to start her day',
@@ -10442,8 +10442,8 @@ const DEMO_SCRIPT_PLANNER = [
     label:'INTRODUCTION',
     title:'Meet David Chen',
     text:'A Day in the Life of a Production Planner.',
-    narration:"This is David Chen, a Production Planner responsible for balancing production schedules, material availability, and capacity constraints across the operation. David constantly adjusts schedules to prevent bottlenecks and keep production moving despite supply disruptions and operational changes. His challenge is making fast decisions with incomplete information.",
-    duration:13000, pointer:null, fn:()=>{}, ticker:[],
+    narration:"Hi, I'm David Chen. I'm responsible for production planning and keeping our schedules aligned with material availability and plant capacity. Every day, priorities shift, shortages happen, and production plans need to adapt quickly. Here's how I use SWAT to stay ahead of disruptions and keep production moving.",
+    duration:15000, pointer:null, fn:()=>{}, ticker:[],
   },
   {
     section:'dashboard', label:'6:55 AM · SHIFT START', title:'David logs in before the production meeting',
@@ -10543,8 +10543,8 @@ const DEMO_SCRIPT_PLANT = [
     label:'INTRODUCTION',
     title:'Meet Maria Gonzalez',
     text:'A Day in the Life of a Plant Operations Manager.',
-    narration:"This is Maria Gonzalez, a Plant Operations Manager responsible for maintaining throughput, reducing downtime, and ensuring operational efficiency across the plant. Maria monitors performance, responds to escalations, and prioritizes operational issues before they impact production targets. Her focus is keeping the operation running smoothly.",
-    duration:13000, pointer:null, fn:()=>{}, ticker:[],
+    narration:"Hi, I'm Maria Gonzalez. I oversee plant operations, production performance, and escalation management across the facility. My focus is making sure downtime, bottlenecks, and operational risks are addressed before they impact throughput. Let me walk you through how I use SWAT to prioritize the issues that need immediate attention.",
+    duration:15000, pointer:null, fn:()=>{}, ticker:[],
   },
   {
     section:'dashboard', label:'6:30 AM · SHIFT HANDOVER', title:'Maria reviews overnight performance',
@@ -11268,19 +11268,19 @@ function startDemo(){
       avatar:'🔗', name:'Sarah Mitchell', role:'Strategic Sourcing Buyer',
       speaking:'Sarah speaking…', avName:'SARAH', avRole:'Strategic Sourcing Buyer',
       initials:'SM', context:'Manufacturing Operations · Bicycle Manufacturing',
-      bio:'Responsible for managing supplier performance and preventing material shortages from disrupting production.',
+      bio:'"I manage supplier performance and prevent material shortages from disrupting production."',
     },
     planner: {
       avatar:'📊', name:'David Chen', role:'Production Planner',
       speaking:'David speaking…', avName:'DAVID', avRole:'Production Planner',
       initials:'DC', context:'Production Planning · Bicycle Manufacturing',
-      bio:'Balances production schedules, material availability, and capacity constraints across the operation.',
+      bio:'"I balance production schedules, material availability, and plant capacity every single day."',
     },
     plant: {
       avatar:'🏭', name:'Maria Gonzalez', role:'Plant Operations Manager',
       speaking:'Maria speaking…', avName:'MARIA', avRole:'Plant Operations Manager',
       initials:'MG', context:'Plant Operations · Bicycle Manufacturing',
-      bio:'Maintains throughput, reduces downtime, and ensures operational efficiency across the plant.',
+      bio:'"I keep the operation running — throughput, downtime, escalations, all of it."',
     },
   };
   const pi = personaInfo[_activePersona] || personaInfo.buyer;
