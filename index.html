@@ -10298,11 +10298,13 @@ const DEMO_SCRIPT = [
   {
     section:'worklist', label:'7:49 AM · CHECKPOINTS', title:'Sarah reads the blocking milestones',
     text:'The Checkpoint column tells Sarah exactly which conversation to have with each supplier.',
-    narration:"See this Checkpoint column? It tells me exactly what's stuck. For part number CD-COM-11020, the checkpoint is Purchase Order Acknowledgement. TrailFlex hasn't even confirmed they received the order. That's my conversation right there. I'm not going to call them and ask for a vague status update. I'm going to say — we sent Purchase Order 2026-08821 twenty-two days ago and you haven't acknowledged it. Where is it? For part number CS-RAW-11011, the checkpoint is Production Finish. AeroCarbon started production but hasn't confirmed it's done. Completely different conversation. SWAT tells me which question to ask each supplier before I pick up the phone.",
-    duration:18000, pointer:null,
+    narration:"See this Checkpoint column? It tells me exactly what's stuck. For ISS-1041 — the rear shock from TrailFlex — the checkpoint is Purchase Order Acknowledgement. They haven't even confirmed they received Purchase Order 2026-08821, twenty-two days ago. That's my conversation. For ISS-1038 — the frameset from AeroCarbon — the checkpoint is Production Finish. They've started production but haven't confirmed it's done. SWAT tells me which question to ask each supplier.",
+    duration:40000, pointer:null,
     subPoints:[
-      {at:3000,  pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(12)'},  // ISS-1041 checkpoint (POA) — spotlight when narrator says "for ISS-1041"
-      {at:11000, pointer:'#wl-tbody tr[data-id="ISS-1038"] td:nth-child(12)'},  // ISS-1038 checkpoint (PF) — spotlight when narrator says "for ISS-1038"
+      // Focus stays on ISS-1041 for the full ~18 s discussion, then moves to ISS-1038
+      // only after Sarah cleanly transitions with "For ISS-1038".
+      {at:5500,  pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(12)'},
+      {at:24000, pointer:'#wl-tbody tr[data-id="ISS-1038"] td:nth-child(12)'},
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[],
