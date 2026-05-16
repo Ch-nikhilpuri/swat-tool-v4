@@ -10278,10 +10278,14 @@ const DEMO_SCRIPT = [
   {
     section:'worklist', label:'7:47 AM · TRIAGE', title:'Sarah works her Issue Worklist',
     text:'Twelve open supply risks, ranked by priority score — work from the top.',
-    narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue is CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. And look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
-    duration:18000, pointer:null,
+    narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue here is ISS-1041, which is impacting part number CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. Look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
+    duration:22000, pointer:null,
     subPoints:[
-      {at:5500, pointer:'#wl-tbody tr:first-child td:nth-child(7)'},  // +22d Proj. Late cell highlighted when narrator says "Twenty-two days projected late"
+      // ~6s: cursor glides to the top issue row (no highlight yet) — narrator setting context
+      {at:6000,  pointer:'#wl-tbody tr[data-id="ISS-1041"]', cursorOnly:true},
+      // ~13s: narrator reaches "Twenty-two days projected late" → ACTIVATE the spotlight
+      // on the +22d Proj. Late cell, full focus mode (no cursorOnly).
+      {at:13000, pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(7)'},
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
@@ -10461,8 +10465,12 @@ const DEMO_SCRIPT_PLANNER = [
   {
     section:'worklist', label:'6:58 AM · DRILL-DOWN', title:'David checks which parts are blocking production',
     text:'The Issue Worklist shows exactly which components are late and by how many days.',
-    narration:"I click the red Dirt-April cell and it filters the worklist to the exact parts causing that risk. The rear shock absorber from TrailFlex — twenty-two days projected late. That's the one killing my April build. I can see the Projected Late column — that's not how late it is today, that's how late it's going to be when it arrives. Twenty-two days means I can't build forty-two Dirt bikes next month. That's real revenue. I need to know if I should pull the Sports build forward or push the Dirt build back. SWAT just told me the problem. Now I need to figure out the response.",
-    duration:18000, cursorOnly:true, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
+    narration:"I click the red Dirt-April cell and it filters the worklist to the exact parts causing that risk. The top result is ISS-1041, which is impacting part number CD-COM-11020 — the rear shock absorber from TrailFlex. Twenty-two days projected late. That's the one killing my April build. I can see the Projected Late column — that's not how late it is today, that's how late it's going to be when it arrives. Twenty-two days means I can't build forty-two Dirt bikes next month. That's real revenue. I need to know if I should pull the Sports build forward or push the Dirt build back. SWAT just told me the problem. Now I need to figure out the response.",
+    duration:20000, pointer:null,
+    subPoints:[
+      {at:5000,  pointer:'#wl-tbody tr[data-id="ISS-1041"]', cursorOnly:true},
+      {at:11500, pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(7)'},
+    ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'error',ico:'🔴',txt:'<strong>Line risk:</strong> Dirt Apr — 42 units at risk',delay:2000},
@@ -10567,8 +10575,12 @@ const DEMO_SCRIPT_PLANT = [
   {
     section:'worklist', label:'6:34 AM · CRITICAL FILTER', title:'Maria filters to CRITICAL issues only',
     text:'Maria doesn\'t work HIGH or MEDIUM — she focuses on what needs her authority.',
-    narration:"I open the Issue Worklist and filter straight to CRITICAL. I don't work HIGH or MEDIUM issues — that's for Sarah and her team. I only need to see the four items that might need my authority to resolve. Part number CD-COM-11020 — rear shock absorber, twenty-two days projected late, no Purchase Order Acknowledgement. That's a potential line stoppage and it might need a VP call to the supplier's exec team. Part number CS-RAW-11011 — frameset, no production finish confirmed. I need the business impact — which customer orders are affected? What's the financial exposure? I can see it all right here without asking anyone.",
-    duration:20000, cursorOnly:true, pointer:'#wl-tbody tr:first-child td:nth-child(7)',
+    narration:"I open the Issue Worklist and filter straight to CRITICAL. I don't work HIGH or MEDIUM issues — that's for Sarah and her team. I only need to see the four items that might need my authority to resolve. ISS-1041 is impacting part number CD-COM-11020 — rear shock absorber, twenty-two days projected late, no Purchase Order Acknowledgement. That's a potential line stoppage and it might need a VP call to the supplier's exec team. ISS-1038 is impacting part number CS-RAW-11011 — the frameset, no Production Finish confirmed. I need the business impact — which customer orders are affected? What's the financial exposure? I can see it all right here without asking anyone.",
+    duration:22000, pointer:null,
+    subPoints:[
+      {at:7000,  pointer:'#wl-tbody tr[data-id="ISS-1041"]'},  // ISS-1041 row spotlight when narrator names it
+      {at:15000, pointer:'#wl-tbody tr[data-id="ISS-1038"]'},  // ISS-1038 row when narrator shifts to it
+    ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
       {type:'error',ico:'🚨',txt:'<strong>4 CRITICAL issues</strong> — Plant Manager review',delay:1500},
@@ -10984,8 +10996,13 @@ function _clearSubPointTimers(){
   _demoSubPointTimers.forEach(t=>clearTimeout(t));
   _demoSubPointTimers = [];
 }
-function _demoMoveSpotlight(selector){
+function _demoMoveSpotlight(selector, opts){
   if(!_demoRunning) return;
+  opts = opts || {};
+  // Per-call cursorOnly override (in addition to the step-level _isCursorOnlyStep flag).
+  // Lets a single step have BOTH cursor-only sub-points (gentle pointing) AND
+  // full-spotlight sub-points (emphasis) in sequence.
+  const cursorOnlyOverride = !!opts.cursorOnly;
   // Resolve selector → one or more target elements
   // selector can be a string, an Element, OR an array of strings/Elements
   // When an array is passed, the spotlight covers the union (bounding rectangle)
@@ -11029,7 +11046,7 @@ function _demoMoveSpotlight(selector){
     }
 
     // cursorOnly mode: skip the spotlight box, ring, and pointer line
-    if(_isCursorOnlyStep()){
+    if(cursorOnlyOverride || _isCursorOnlyStep()){
       _hideSpotlight();
       _clearRingOnly();
       _clearPointer();
@@ -11723,14 +11740,16 @@ function renderDemoStep(){
     if(step.ticker) demoShowTicker(step.ticker);
 
     // ── Schedule sub-point moves so the spotlight follows the narration ──
-    // Each entry: { at: ms_offset_relative_to_narration_start, pointer: selector }
+    // Each entry: { at: ms_offset_relative_to_step_start, pointer: selector,
+    //               cursorOnly?: bool (point only, no spotlight box) }
     // narrationDelay (if set) shifts all sub-points so they stay synced.
     const _subShift = step.narrationDelay || 0;
     if(Array.isArray(step.subPoints)){
       step.subPoints.forEach(sub=>{
         if(!sub || !sub.pointer) return;
+        const _co = !!sub.cursorOnly;
         const tid = setTimeout(()=>{
-          if(_demoRunning) _demoMoveSpotlight(sub.pointer);
+          if(_demoRunning) _demoMoveSpotlight(sub.pointer, {cursorOnly:_co});
         }, Math.max(0, (sub.at || 0) + _subShift));
         _demoSubPointTimers.push(tid);
       });
