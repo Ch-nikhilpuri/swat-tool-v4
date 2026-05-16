@@ -10374,7 +10374,7 @@ const DEMO_SCRIPT = [
   {
     section:'commsagent', label:'7:56 AM · AGENTS', title:'Sarah checks what the agents did overnight',
     text:'Six autonomous agents ran while Sarah slept — parsing emails, sending escalations, updating scores.',
-    narration:"This is the part that honestly blew my mind when I first started using SWAT. Six autonomous agents have been running all night. The Comms Agent read every supplier email that came in overnight. The Escalation Agent sent formal notices to TrailFlex and SteelCore. The Risk Model Agent re-scored all thirteen Purchase Order lines. I didn't do any of this. I clicked Start Agents yesterday afternoon and went home. This morning, I'm reviewing what the system already did. My job has shifted from doing the work to reviewing the work. That's a massive change.",
+    narration:"This is the part that honestly blew my mind when I first started using SWAT. Six autonomous agents have been running all night. The Comms Agent read every supplier email that came in overnight. The Escalation Agent sent formal notices to TrailFlex and AeroCarbon. The Risk Model Agent re-scored all thirteen Purchase Order lines. I didn't do any of this. I clicked Start Agents yesterday afternoon and went home. This morning, I'm reviewing what the system already did. My job has shifted from doing the work to reviewing the work. That's a massive change.",
     duration:22000, pointer:'#ca-master-btn',
     fn:()=>{try{initCommsAgent();renderCaInbox();}catch(e){}},
     ticker:[
@@ -10408,18 +10408,18 @@ const DEMO_SCRIPT = [
   {
     section:'alerts', label:'8:00 AM · ALERT QUEUE', title:'Sarah clears the alert queue',
     text:'Every alert was generated and dispatched by the Escalation Agent overnight.',
-    narration:"Quick check on the Alert Queue. Everything here was sent by the Escalation Agent overnight. Critical alerts, high-risk notices — all drafted and dispatched to the right supplier contacts without me approving any of them. I can see the TrailFlex escalation went out at six forty-two AM. SteelCore got a high-risk notice at seven fifteen. The suppliers already know there's a problem. When I call them at nine o'clock, they've had time to check internally. That makes my conversations so much more productive. I'm not breaking bad news anymore. I'm following up on a conversation the agent already started.",
+    narration:"Quick check on the Alert Queue. Everything here was sent by the Escalation Agent overnight. Critical alerts, high-risk notices — all drafted and dispatched to the right supplier contacts without me approving any of them. I can see the TrailFlex escalation went out at six forty-two AM. AeroCarbon got a high-risk notice at seven fifteen. The suppliers already know there's a problem. When I call them at nine o'clock, they've had time to check internally. That makes my conversations so much more productive. I'm not breaking bad news anymore. I'm following up on a conversation the agent already started.",
     duration:18000, pointer:'#alert-list',
     fn:()=>{},
     ticker:[
       {type:'error',ico:'🚨',txt:'<strong>Escalation sent</strong> → TrailFlex · 6:42 AM',delay:1500},
-      {type:'warn',ico:'⚠',txt:'<strong>HIGH notice sent</strong> → SteelCore · 7:15 AM',delay:3000},
+      {type:'warn',ico:'⚠',txt:'<strong>HIGH notice sent</strong> → AeroCarbon · 7:15 AM',delay:3000},
     ],
   },
   {
     section:'performance', label:'8:02 AM · SUPPLIER INTEL', title:'Sarah reviews supplier performance data',
     text:'OTIF, avg delay, lead time variance — the evidence behind every risk score.',
-    narration:"Last thing before my morning standup — I check supplier performance on the Performance Dashboard. TrailFlex is at seventy-two percent OTIF. SteelCore at sixty-eight. These numbers feed directly into the risk model. When TrailFlex misses a Purchase Order Acknowledgement, SWAT weights it heavier because their historical performance is poor. A ninety-five percent OTIF supplier missing a Purchase Order Acknowledgement gets a lower risk score because they almost always deliver. The model learns from history. I use this data in my supplier business reviews too. It's not anecdotal anymore. I can show them their trend line and have a data-backed conversation about what needs to change.",
+    narration:"Last thing before my morning standup — I check supplier performance on the Performance Dashboard. TrailFlex is at seventy-one percent OTIF. AeroCarbon is even lower at sixty-one percent. These numbers feed directly into the risk model. When TrailFlex misses a Purchase Order Acknowledgement, SWAT weights it heavier because their historical performance is poor. A ninety-five percent OTIF supplier missing a Purchase Order Acknowledgement gets a lower risk score because they almost always deliver. The model learns from history. I use this data in my supplier business reviews too. It's not anecdotal anymore. I can show them their trend line and have a data-backed conversation about what needs to change.",
     duration:18000, pointer:'#ss-tbody tr:first-child td:nth-child(5)',
     fn:()=>{try{renderSS();}catch(e){}},
     ticker:[],
@@ -10513,7 +10513,7 @@ const DEMO_SCRIPT_PLANNER = [
   {
     section:'simulation', label:'7:08 AM · SIMULATION', title:'David runs a 7-day forward projection',
     text:'What happens if I adjust the schedule? SWAT simulates the outcomes.',
-    narration:"This is honestly the feature that saved my career. The Simulation Engine. I can run a seven-day forward projection that shows me how every open issue will evolve. I hit Run and watch — Day two, SteelCore confirms their shipment. Day four, the TrailFlex issue gets a revised commit for April fourteenth — that actually gives me three days of buffer if I move the Dirt build to Week fifteen. Day five, the AeroCarbon problem gets worse. So now I know — move the Dirt build to Week fifteen, keep Sports on schedule for now, and escalate the AeroCarbon issue to procurement as the top priority. Decision made. Three minutes. Before SWAT, I'd spend two hours in meetings arguing about what to reschedule based on gut feel. Now I have data.",
+    narration:"This is honestly the feature that saved my career. The Simulation Engine. I can run a seven-day forward projection that shows me how every open issue will evolve. I hit Run and watch — Day two, Velora confirms their shipment. Day four, the TrailFlex issue gets a revised commit for April fourteenth — that actually gives me three days of buffer if I move the Dirt build to Week fifteen. Day five, the AeroCarbon problem gets worse. So now I know — move the Dirt build to Week fifteen, keep Sports on schedule for now, and escalate the AeroCarbon issue to procurement as the top priority. Decision made. Three minutes. Before SWAT, I'd spend two hours in meetings arguing about what to reschedule based on gut feel. Now I have data.",
     duration:24000, pointer:'#sec-simulation',
     fn:()=>{},
     ticker:[
@@ -10603,18 +10603,18 @@ const DEMO_SCRIPT_PLANT = [
   {
     section:'performance', label:'6:37 AM · ROOT CAUSE', title:'Maria investigates why OTIF is dropping',
     text:'Supplier performance trends reveal the pattern behind the numbers.',
-    narration:"Here's the question I need to answer before my VP meeting — why is our OTIF dropping? I open the Performance dashboard and the answer is right there. TrailFlex at seventy-two percent OTIF. SteelCore at sixty-eight percent. These two suppliers are responsible for about eighty percent of our critical issues. And when I look at the trend — it's not a one-time blip. Their lead time variance has been increasing for three months. That's a pattern, not an accident. I'm going to recommend dual-sourcing for both of these suppliers. Before SWAT, I'd need an analyst to pull this data into a PowerPoint. Now I can screenshot this dashboard and drop it into my VP deck in thirty seconds. Data-backed decisions, not gut-feel escalations.",
+    narration:"Here's the question I need to answer before my VP meeting — why is our OTIF dropping? I open the Performance dashboard and the answer is right there. TrailFlex at seventy-one percent OTIF. AeroCarbon at sixty-one percent. These two suppliers are responsible for most of our critical issues. And when I look at the trend — it's not a one-time blip. Their lead time variance has been increasing for three months. That's a pattern, not an accident. I'm going to recommend dual-sourcing for both of these suppliers. Before SWAT, I'd need an analyst to pull this data into a PowerPoint. Now I can screenshot this dashboard and drop it into my VP deck in thirty seconds. Data-backed decisions, not gut-feel escalations.",
     duration:22000, pointer:'#sec-performance',
     fn:()=>{try{renderPerformance();}catch(e){}},
     ticker:[
       {type:'warn',ico:'📉',txt:'<strong>TrailFlex OTIF:</strong> 72% — 3-month decline',delay:2000},
-      {type:'warn',ico:'📉',txt:'<strong>SteelCore OTIF:</strong> 68% — pattern confirmed',delay:3500},
+      {type:'warn',ico:'📉',txt:'<strong>AeroCarbon OTIF:</strong> 61% — pattern confirmed',delay:3500},
     ],
   },
   {
     section:'commsagent', label:'6:40 AM · AGENT LOG', title:'Maria reviews what the agents did overnight',
     text:'Six agents ran all night — Maria checks for exceptions that need human judgment.',
-    narration:"I always check the agent activity log. Six autonomous agents ran all night while nobody was here. The Comms Agent parsed four supplier emails. The Escalation Agent sent two formal notices — one to TrailFlex, one to SteelCore. Risk scores were recalculated across all thirteen Purchase Order lines. I don't review every action — I scan for exceptions. Things the agents flagged because they couldn't handle them automatically. Today there's one — AeroCarbon sent a message about a scope change that the agent couldn't process. I assign that to Sarah. Takes me ten seconds. Everything else — the agents handled it. My night shift supervisor used to email me a two-page summary. Now the agents write the summary and I just check the exception list.",
+    narration:"I always check the agent activity log. Six autonomous agents ran all night while nobody was here. The Comms Agent parsed four supplier emails. The Escalation Agent sent two formal notices — one to TrailFlex, one to Pinnacle Forge. Risk scores were recalculated across all thirteen Purchase Order lines. I don't review every action — I scan for exceptions. Things the agents flagged because they couldn't handle them automatically. Today there's one — AeroCarbon sent a message about a scope change that the agent couldn't process. I assign that to Sarah. Takes me ten seconds. Everything else — the agents handled it. My night shift supervisor used to email me a two-page summary. Now the agents write the summary and I just check the exception list.",
     duration:22000, pointer:'#ca-log',
     fn:()=>{try{initCommsAgent();renderCaInbox();}catch(e){}},
     ticker:[
@@ -10625,12 +10625,12 @@ const DEMO_SCRIPT_PLANT = [
   {
     section:'alerts', label:'6:43 AM · ESCALATIONS', title:'Maria adds her personal follow-up to agent escalations',
     text:'The agents already contacted suppliers — Maria adds executive-level notes.',
-    narration:"Last stop — the Alert Queue. The Escalation Agent already sent formal notices to TrailFlex and SteelCore before dawn. The suppliers already know there's a problem. My role here is to add the executive layer. For the TrailFlex escalation, I add a note — schedule a VP-level call by end of week. For SteelCore — request a formal recovery plan by Wednesday. These notes feed back into the system. Next time the agent drafts an escalation for these suppliers, it includes the context of my previous escalations. The system gets smarter with each interaction. Before SWAT, I'd spend forty-five minutes every morning reading emails from buyers, trying to assemble a picture of what happened overnight. Now I have the picture in six minutes and I'm adding strategic direction on top of it.",
+    narration:"Last stop — the Alert Queue. The Escalation Agent already sent formal notices to TrailFlex and AeroCarbon before dawn. The suppliers already know there's a problem. My role here is to add the executive layer. For the TrailFlex escalation, I add a note — schedule a VP-level call by end of week. For AeroCarbon — request a formal recovery plan by Wednesday. These notes feed back into the system. Next time the agent drafts an escalation for these suppliers, it includes the context of my previous escalations. The system gets smarter with each interaction. Before SWAT, I'd spend forty-five minutes every morning reading emails from buyers, trying to assemble a picture of what happened overnight. Now I have the picture in six minutes and I'm adding strategic direction on top of it.",
     duration:20000, pointer:'#alert-list',
     fn:()=>{},
     ticker:[
       {type:'success',ico:'📧',txt:'<strong>TrailFlex escalation</strong> — VP call note added',delay:1500},
-      {type:'success',ico:'📧',txt:'<strong>SteelCore notice</strong> — recovery plan requested',delay:3000},
+      {type:'success',ico:'📧',txt:'<strong>AeroCarbon notice</strong> — recovery plan requested',delay:3000},
     ],
   },
   {
