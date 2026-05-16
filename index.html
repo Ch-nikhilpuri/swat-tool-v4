@@ -10278,14 +10278,17 @@ const DEMO_SCRIPT = [
   {
     section:'worklist', label:'7:47 AM · TRIAGE', title:'Sarah works her Issue Worklist',
     text:'Twelve open supply risks, ranked by priority score — work from the top.',
-    narration:"Alright, here's my worklist. Twelve open issues, ranked by priority score. I always work top to bottom — SWAT already figured out the order for me. The top issue here is ISS-1041, which is impacting part number CD-COM-11020, the rear shock from TrailFlex. Twenty-two days projected late. Look at this column — Projected Late. That's not how late it is now. That's how late it will be when it arrives. SWAT is predicting the future for me. That's a huge difference because it changes what I do about it. If something is going to be three days late, I can live with it. Twenty-two days? I'm picking up the phone.",
-    duration:22000, pointer:null,
+    narration:"Here's my worklist. Twelve open issues, ranked by priority score. The top one — ISS-1041 — is impacting part number CD-COM-11020, the rear shock from TrailFlex. Look at the Projected Late column. Twenty-two days. That's not how late it is now — that's how late it will be when it arrives. SWAT is predicting the future. Twenty-two days late? I'm picking up the phone.",
+    duration:32000, pointer:null,
+    // Synchronised pointing: each pointer fires at the exact moment its subject is named.
     subPoints:[
-      // ~6s: cursor glides to the top issue row (no highlight yet) — narrator setting context
-      {at:6000,  pointer:'#wl-tbody tr[data-id="ISS-1041"]', cursorOnly:true},
-      // ~13s: narrator reaches "Twenty-two days projected late" → ACTIVATE the spotlight
-      // on the +22d Proj. Late cell, full focus mode (no cursorOnly).
-      {at:13000, pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(7)'},
+      // ~2.5s: narrator says "Twelve open issues" → cursor lands on the "12 issues" count label
+      {at:2500,  pointer:'#wl-count-label', cursorOnly:true},
+      // ~6.5s: narrator says "The top one — ISS-1041 — is impacting part number CD-COM-11020"
+      //         → cursor glides to the ISS-1041 row (still cursor-only, gentle context build)
+      {at:6500,  pointer:'#wl-tbody tr[data-id="ISS-1041"]', cursorOnly:true},
+      // ~17s: narrator says "Twenty-two days" → FULL SPOTLIGHT lands on the +22d cell
+      {at:17000, pointer:'#wl-tbody tr[data-id="ISS-1041"] td:nth-child(7)'},
     ],
     fn:()=>{try{renderWorklist(ISSUES);}catch(e){}},
     ticker:[
