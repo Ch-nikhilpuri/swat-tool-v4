@@ -24,7 +24,7 @@
   --shadow-sm:0 1px 4px rgba(13,17,23,.07);
   --shadow:0 2px 12px rgba(13,17,23,.09);
   --shadow-lg:0 8px 36px rgba(13,17,23,.14);
-  --sidebar-w:242px;--radius:8px;--demo-presenter-w:240px;
+  --sidebar-w:242px;--radius:8px;--demo-presenter-w:0px;
   --font:'IBM Plex Sans',sans-serif;
   --mono:'IBM Plex Mono',monospace;
   --display:'Syne',sans-serif;
@@ -1281,7 +1281,8 @@ body.demo-focus-on #demo-avatar {
   transform:translateX(300px);
 }
 #meeting-frame.active {
-  display:flex;
+  /* Visual presenter panel DISABLED — voice narration only, full-width SWAT */
+  display:none !important;
   transform:translateX(0);
 }
 
