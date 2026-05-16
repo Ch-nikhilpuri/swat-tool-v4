@@ -1611,40 +1611,56 @@ body.demo-meeting-on #demo-narrator { display: none !important; }
 body.demo-meeting-on #demo-avatar   { display: none !important; }
 
 /* ═════════════════════════════════════════════════════════════════════
-   FLOATING DEMO CONTROL BAR
-   Compact, bottom-centered. Voice-only walkthrough — no presenter panel.
+   FLOATING DEMO CONTROL BAR — Glassmorphic, draggable, bottom-centered
+   Defaults to bottom-center. User can drag anywhere on screen.
    ═════════════════════════════════════════════════════════════════════ */
 #demo-control-bar {
   position: fixed;
-  bottom: 24px;
+  bottom: 18px;
   left: 50%;
-  transform: translateX(-50%) translateY(20px);
+  transform: translateX(-50%) translateY(16px);
   z-index: 9500;
-  background: rgba(8, 11, 18, .92);
-  border: 1px solid rgba(217, 119, 6, .25);
-  border-radius: 14px;
-  padding: 10px 12px;
+
+  /* Glassmorphism: high-blur frosted glass with soft amber rim */
+  background: linear-gradient(135deg, rgba(20,24,33,.55), rgba(10,13,20,.65));
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  box-shadow:
+    0 12px 40px rgba(0,0,0,.45),
+    0 0 0 1px rgba(217,119,6,.08) inset,
+    0 1px 0 rgba(255,255,255,.12) inset;
+
+  padding: 5px 7px;
   display: none;
   flex-direction: column;
-  gap: 7px;
-  min-width: 360px; max-width: 480px;
-  box-shadow: 0 16px 50px rgba(0, 0, 0, .55), 0 0 0 1px rgba(217, 119, 6, .12);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  gap: 4px;
+  min-width: 230px; max-width: 300px;
   font-family: var(--font);
   opacity: 0;
   transition: opacity .3s ease, transform .35s cubic-bezier(.4,0,.2,1);
+  user-select: none;
+  cursor: grab;
 }
+#demo-control-bar:active { cursor: grabbing; }
+#demo-control-bar.dragging { cursor: grabbing; transition: none; }
 body.demo-meeting-on #demo-control-bar {
   display: flex;
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+/* Once dragged, JS sets explicit left/top — we kill the centering transform */
+body.demo-meeting-on #demo-control-bar.dragged {
+  transform: none !important;
+}
+
 #demo-control-bar .dcb-progress {
-  height: 3px;
-  background: rgba(255, 255, 255, .08);
+  height: 2px;
+  background: rgba(255,255,255,.08);
   border-radius: 2px;
   overflow: hidden;
+  margin: 1px 8px 0;
 }
 #demo-control-bar .dcb-progress-fill {
   height: 100%;
@@ -1656,20 +1672,21 @@ body.demo-meeting-on #demo-control-bar {
 #demo-control-bar .dcb-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
 }
 #demo-control-bar .dcb-meta {
   display: flex; flex-direction: column;
-  gap: 1px;
-  margin-right: 6px;
+  gap: 0;
+  margin: 0 8px 0 6px;
   flex: 1;
   min-width: 0;
+  line-height: 1.15;
 }
 #demo-control-bar .dcb-step {
   font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: 1.2px;
-  color: rgba(217, 119, 6, .85);
+  font-size: 8.5px;
+  letter-spacing: 1px;
+  color: rgba(245,158,11,.9);
   text-transform: uppercase;
   font-weight: 700;
   white-space: nowrap;
@@ -1678,44 +1695,42 @@ body.demo-meeting-on #demo-control-bar {
 }
 #demo-control-bar .dcb-counter {
   font-family: var(--mono);
-  font-size: 10px;
-  color: rgba(255, 255, 255, .4);
+  font-size: 9px;
+  color: rgba(255,255,255,.35);
   white-space: nowrap;
 }
 #demo-control-bar .dcb-btn {
-  padding: 7px 11px;
+  padding: 4px 7px;
   border: none;
-  background: rgba(255, 255, 255, .07);
-  color: rgba(255, 255, 255, .75);
-  border-radius: 7px;
-  font-size: 13px;
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.78);
+  border-radius: 50%;
+  width: 26px; height: 26px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: all .15s;
+  transition: background .15s, color .15s, transform .15s;
   font-family: inherit;
-  min-width: 34px;
   line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 #demo-control-bar .dcb-btn:hover {
-  background: rgba(255, 255, 255, .14);
+  background: rgba(255,255,255,.16);
   color: #fff;
-  transform: translateY(-1px);
+  transform: scale(1.08);
 }
 #demo-control-bar .dcb-btn-primary {
-  background: rgba(217, 119, 6, .35);
-  color: #fff;
-  border: 1px solid rgba(217, 119, 6, .45);
+  background: linear-gradient(135deg, rgba(245,158,11,.85), rgba(217,119,6,.85));
+  color: #0a0d14;
+  box-shadow: 0 2px 8px rgba(217,119,6,.35);
 }
 #demo-control-bar .dcb-btn-primary:hover {
-  background: rgba(217, 119, 6, .55);
-  border-color: rgba(217, 119, 6, .7);
-}
-#demo-control-bar .dcb-btn-exit {
-  margin-left: 4px;
-  color: rgba(255, 255, 255, .45);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
 }
 #demo-control-bar .dcb-btn-exit:hover {
-  background: rgba(220, 38, 38, .35);
+  background: rgba(220,38,38,.5);
   color: #fff;
 }
 
@@ -11145,6 +11160,10 @@ function startDemo(){
   const btn = document.getElementById('demo-btn');
   if(btn){ btn.textContent='⏹ Exit Demo'; btn.onclick=exitDemo; }
 
+  // Reset the floating control bar to bottom-center and enable dragging
+  _resetDemoControlBarPosition();
+  _initDemoControlBarDrag();
+
   renderDemoStep();
   showToast(pi.name + ' — Day in the Life','s');
 }
@@ -11282,6 +11301,62 @@ function demoStep(dir){
 }
 
 // ── Toggle auto-advance (pause/resume) ──────────────────────────────────────
+// ── Make the floating demo control bar draggable ────────────────────────────
+function _initDemoControlBarDrag(){
+  const bar = document.getElementById('demo-control-bar');
+  if(!bar || bar._dragInit) return;
+  bar._dragInit = true;
+  let dragging = false, sx=0, sy=0, bx=0, by=0;
+  const onDown = (e)=>{
+    if(e.target.closest('button')) return;       // don't start drag on buttons
+    const pt = e.touches ? e.touches[0] : e;
+    dragging = true;
+    const r = bar.getBoundingClientRect();
+    sx = pt.clientX; sy = pt.clientY;
+    bx = r.left;     by = r.top;
+    bar.classList.add('dragging','dragged');
+    bar.style.left   = bx + 'px';
+    bar.style.top    = by + 'px';
+    bar.style.right  = 'auto';
+    bar.style.bottom = 'auto';
+    e.preventDefault();
+  };
+  const onMove = (e)=>{
+    if(!dragging) return;
+    const pt = e.touches ? e.touches[0] : e;
+    const w = bar.offsetWidth, h = bar.offsetHeight;
+    let nx = bx + (pt.clientX - sx);
+    let ny = by + (pt.clientY - sy);
+    // Keep on-screen
+    nx = Math.max(4, Math.min(window.innerWidth - w - 4, nx));
+    ny = Math.max(4, Math.min(window.innerHeight - h - 4, ny));
+    bar.style.left = nx + 'px';
+    bar.style.top  = ny + 'px';
+  };
+  const onUp = ()=>{
+    if(!dragging) return;
+    dragging = false;
+    bar.classList.remove('dragging');
+  };
+  bar.addEventListener('mousedown', onDown);
+  bar.addEventListener('touchstart', onDown, {passive:false});
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive:false});
+  document.addEventListener('mouseup',   onUp);
+  document.addEventListener('touchend',  onUp);
+}
+
+// Reset the control bar back to bottom-center (called on every demo start)
+function _resetDemoControlBarPosition(){
+  const bar = document.getElementById('demo-control-bar');
+  if(!bar) return;
+  bar.classList.remove('dragged');
+  bar.style.left   = '';
+  bar.style.top    = '';
+  bar.style.right  = '';
+  bar.style.bottom = '';
+}
+
 function demoPauseResume(){
   _demoAuto = !_demoAuto;
   const icon = _demoAuto ? '⏸' : '▶';
