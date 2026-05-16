@@ -1037,10 +1037,13 @@ html.dark .chart-dark{background:#080c14;}
 @keyframes avGlow { 0%,100%{box-shadow:0 0 10px rgba(217,119,6,.15)} 50%{box-shadow:0 0 28px rgba(217,119,6,.45)} }
 
 /* ── Pointer beam — SVG line from avatar hand to element ──────────────── */
-#demo-pointer-svg {
-  position: fixed; inset: 0; z-index: 9050;
-  pointer-events: none; display: none;
-  width: 100%; height: 100%;
+#demo-pointer-svg,
+#demo-pointer-line,
+#demo-pointer-dot {
+  /* Pointer guide-line DISABLED globally — cursor + spotlight box are sufficient */
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 #demo-pointer-line {
   stroke: var(--amber, #d97706);
